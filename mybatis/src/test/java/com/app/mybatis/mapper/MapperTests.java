@@ -1,5 +1,6 @@
 package com.app.mybatis.mapper;
 
+import com.app.mybatis.domain.dto.PostDTO;
 import com.app.mybatis.domain.vo.MemberVO;
 import com.app.mybatis.domain.vo.PostVO;
 import lombok.extern.slf4j.Slf4j;
@@ -89,20 +90,16 @@ public class MapperTests {
 
     @Test
     public void postSelectAllTest() {
-        postMapper.selectAll().forEach(postVO -> log.info(postVO.toString()));
+        postMapper.selectAll(1L).forEach(postVO -> log.info(postVO.toString()));
     }
 
     @Test
     public void postSelectTest() {
-        postMapper.select(8L).map(PostVO::toString).ifPresent(log::info);
+        postMapper.select(8L).map(PostDTO::toString).ifPresent(log::info);
     }
 
 
 
-    @Test
-    public void postSelectPostReadCountTest() {
-        postMapper.selectPostReadCount().forEach(postVO -> log.info(postVO.toString()));
-    }
 
     @Test
     public void updatePostTest() {
@@ -113,9 +110,9 @@ public class MapperTests {
         postVO.setMemberId(4L);
         postVO.setPostReadCount(12L);
 
-        postMapper.select(8L).map(PostVO::toString).ifPresent(log::info);
+        postMapper.select(8L).map(PostDTO::toString).ifPresent(log::info);
         postMapper.update(postVO);
-        postMapper.select(8L).map(PostVO::toString).ifPresent(log::info);
+        postMapper.select(8L).map(PostDTO::toString).ifPresent(log::info);
     }
 
     @Test
