@@ -1,6 +1,6 @@
 package com.app.controller.controller;
 
-import com.app.controller.dto.User;
+import com.app.controller.domain.vo.MemberVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 @Slf4j
 @Controller
@@ -61,4 +60,27 @@ public class ExampleController {
     public String ex05(@ModelAttribute("name") String name, @ModelAttribute("hobby") String hobby) {
         return "ex05";
     }
+
+
+
+    @GetMapping("ex06")
+    public String goToEx06() {
+        return "ex06";
+    }
+
+    @GetMapping("ex06-complete")
+    public String goToEx06Complete(@ModelAttribute("memberName") String memberName) {
+        return "ex06-complete";
+    }
+
+    @PostMapping("ex06")
+    public String ex06(MemberVO memberVO) {
+        log.info("응답이 들어옴!");
+        log.info("memberVO : {}", memberVO);
+        return "redirect:/ex/ex06-complete?memberName=" + memberVO.getMemberName();
+    }
+
+
+
+
 }
