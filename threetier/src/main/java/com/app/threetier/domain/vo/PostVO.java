@@ -1,17 +1,14 @@
-package com.app.controller.domain.dto;
-
+package com.app.threetier.domain.vo;
 
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
-@Component
 @Data
-public class PostDTO {
+@Component
+public class PostVO {
     private Long id;
     private String postTitle;
     private String postContent;
     private Long memberId;
     private Long postReadCount;
-    private String memberEmail;
-    private String memberName;
 }

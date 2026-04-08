@@ -4,8 +4,10 @@
     <select id="selectAll" resultType="PostDTO">
         SELECT
             TBP.ID, TBP.POST_TITLE, TBP.POST_CONTENT, TBP.MEMBER_ID, TBP.POST_READ_COUNT,
-            TBM.MEMBER_EMAIL, TBM.MEMBER_PASSWORD, TBM.MEMBER_NAME
+            TBM.MEMBER_EMAIL, TBM.MEMBER_NAME
         FROM TBL_POST TBP
-        JOIN TBL_MEMBER TBM ON TBP.MEMBER_ID = TBM.ID
+        JOIN TBL_MEMBER TBM
+        ON TBP.MEMBER_ID = TBM.ID
+
     </select>
 </mapper>
