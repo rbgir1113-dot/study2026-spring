@@ -5,14 +5,23 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>수정 페이지</title>
+    <title>게시글 다시보기</title>
 </head>
 <body>
-    <form th:action="@{/posts/update}" method="post" th:object="${posts}">
-        <input type="hidden" th:field="*{id}" value="*{id}">
-        <input type="text" th:field="*{postTitle}" th:value="*{postTitle}" placeholder="게시글 제목" />
-        <input type="text" th:field="*{postContent}" th:value="*{postContent}" placeholder="게시글 내용" />
-        <button type="button">게시글 수정</button>
+    <form th:action="@{/posts/update-ok}" th:object="${post}" method="post">
+        <input type="hidden" th:field="*{id}"></input>
+        <div>
+            <p>제목</p>
+            <input type="text" name="postTitle" th:field="*{postTitle}"></input>
+        </div>
+        <div>
+            <p>내용</p>
+            <input type="text" name="postContent" th:field="*{postContent}"></input>
+        </div>
+        <div>
+            <a th:href="@{/posts/read(id=*{id})}">수정취소</a>
+            <button type="submit">수정완료</button>
+        </div>
     </form>
 </body>
 

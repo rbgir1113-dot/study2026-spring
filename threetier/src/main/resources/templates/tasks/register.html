@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>register</title>
+</head>
+<body>
+    <form th:action="@{/tasks/register}" method="post" th:object="${taskVO}">
+        <input type="text" th:field="*{taskKor}" placeholder="국어 점수를 입력하세요">
+        <input type="text" th:field="*{taskEng}" placeholder="영어 점수를 입력하세요">
+        <input type="text" th:field="*{taskMath}" placeholder="수학 점수를 입력하세요">
+        <button type="button">점수 입력</button>
+    </form>
+</body>
+<script>
+    const inputs = document.querySelectorAll("input");
+    const btn = document.querySelector("button");
+    const form = document.querySelector("form");
+
+    btn.addEventListener('click', () => {
+        for (let input of inputs) {
+            if(!input.value) return alert(input.name + "값이 없습니다.");
+        }
+        form.submit();
+    });
+</script>
+</html>

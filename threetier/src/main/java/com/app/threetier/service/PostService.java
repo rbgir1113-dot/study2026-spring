@@ -17,5 +17,7 @@ public interface PostService {
     public List<PostDTO> getPosts();
 
     public PostDTO getPost(Long id);
-    public void getPostUpdate(PostVO postVO);
+    public void updatePost(PostVO postVO);
+    public void increaseReadCount(Long id);
+    public void deletePost(Long id);
 }

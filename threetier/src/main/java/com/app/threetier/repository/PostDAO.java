@@ -33,4 +33,11 @@ public class PostDAO {
         postMapper.update(postVO);
     }
 
+    public void updateReadCount(Long id){
+        postMapper.updateReadCount(id);
+    }
+
+    public void delete(Long id){
+        postMapper.delete(id);
+    }
 }

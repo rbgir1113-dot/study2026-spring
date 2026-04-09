@@ -22,9 +22,19 @@ public class PostServiceTests {
     void getPostUpdateTest() {
         PostVO postVO = new PostVO();
         postVO.setId(1L);
-        postVO.setPostTitle("게시글 제목 변경!");
-        postVO.setPostContent("게시글 내용 변경?");
-        postService.getPostUpdate(postVO);
-        log.info("post {}", postService.getPost(1L));
+        postVO.setPostTitle("수정된 제목 변경!");
+        postVO.setPostContent("수정된 내용 변경?");
+        postService.updatePost(postVO);
+        log.info("post : {}", postService.getPost(1L));
+    }
+
+    @Test
+    void increaseReadCountTest() {
+        postService.increaseReadCount(1L);
+    }
+
+    @Test
+    public void deletePostTest() {
+        postService.deletePost(49L);
     }
 }
