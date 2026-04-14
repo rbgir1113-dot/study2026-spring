@@ -1,5 +1,7 @@
 package com.app.restful.domain.vo;
 
+import com.app.restful.domain.dto.MemberJoinRequestDTO;
+import com.app.restful.domain.dto.MemberUpdateRequestDTO;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
@@ -12,4 +14,21 @@ public class MemberVO implements Serializable {  // Serializable -> 다른 서�
     private String memberEmail;
     private String memberPassword;
     private String memberName;
+
+
+    public static MemberVO from(MemberJoinRequestDTO memberJoinRequestDTO) {
+        MemberVO memberVO = new MemberVO();
+        memberVO.setMemberEmail(memberJoinRequestDTO.getMemberEmail());
+        memberVO.setMemberPassword(memberJoinRequestDTO.getMemberPassword());
+        memberVO.setMemberName(memberJoinRequestDTO.getMemberName());
+        return memberVO;
+    }
+
+    public static MemberVO from(MemberUpdateRequestDTO memberUpdateRequestDTO) {
+        MemberVO memberVO = new MemberVO();
+        memberVO.setId(memberUpdateRequestDTO.getId());
+        memberVO.setMemberName(memberUpdateRequestDTO.getMemberName());
+        memberVO.setMemberPassword(memberUpdateRequestDTO.getMemberPassword());
+        return memberVO;
+    }
 }
