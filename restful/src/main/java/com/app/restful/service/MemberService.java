@@ -31,4 +31,6 @@ public interface MemberService {
 //    회원 비밀번호 변경(로그인 하기 전)
 //    회원 탈퇴
     public void withdraw(Long id);
+
+    public void withdrawByMemberPost(Long id);
 }

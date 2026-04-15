@@ -92,8 +92,8 @@ public class MemberAPI {
             schema = @Schema(type = "number") // 스키마 타입
     )
     @DeleteMapping("/{id}")
-    public void delete(@RequestBody Long id) {
-
+    public void delete(@PathVariable Long id) {
+        memberService.withdrawByMemberPost(id);
         memberService.withdraw(id);
     }
 }

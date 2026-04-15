@@ -6,7 +6,9 @@ import com.app.restful.domain.dto.MemberUpdateRequestDTO;
 import com.app.restful.domain.vo.MemberVO;
 import com.app.restful.exception.MemberException;
 import com.app.restful.repository.MemberDAO;
+import com.app.restful.repository.PostDAO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,8 +21,8 @@ import java.util.Optional;
 public class MemberServiceImpl implements MemberService {
 
     private final MemberDAO memberDAO;
-    private final MemberUpdateRequestDTO memberUpdateRequestDTO;
     private final MemberVO memberVO;
+    private final PostDAO postDAO;
 
     @Override
     public void join(MemberJoinRequestDTO memberJoinRequestDTO) {
@@ -78,9 +80,21 @@ public class MemberServiceImpl implements MemberService {
         memberDAO.update(memberVO.from(memberUpdateRequestDTO));
     }
 
+//    회원 정보 삭제
+
+
     @Override
     public void withdraw(Long id) {
-        // 참조하는 POST 게시판의 삭제
         memberDAO.delete(id);
     }
+
+
+    @Override
+    public void withdrawByMemberPost(Long id) {
+        // 참조하는 POST 게시판의 삭제
+        postDAO.withdrawByMemberId(id);
+        memberDAO.delete(id);
+    }
+
+
 }

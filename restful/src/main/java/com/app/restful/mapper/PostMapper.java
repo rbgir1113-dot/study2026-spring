@@ -1,5 +1,6 @@
 package com.app.restful.mapper;
 
+import com.app.restful.domain.dto.PostCreateRequestDTO;
 import com.app.restful.domain.dto.PostDTO;
 import com.app.restful.domain.vo.PostVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -31,10 +32,19 @@ public interface PostMapper {
 //* Swagger 문서 정의
 //* RestController로 정의(RESTful)
 //* Swagger 테스트 완료!
-//            * 적절한 Exception throw(Service단)
-//            * 적절한 Optional(Repository단)
+//* 적절한 Exception throw(Service단)
+//* 적절한 Optional(Repository단)
 //* 적절한 DTO를 설계
 
     public List<PostDTO> selectAll();
 
+    public PostDTO select(Long id);
+
+    public void insert(PostVO postVO);
+
+    public void update(PostVO postVO);
+
+    public void delete(Long id);
+
+    public void deleteByMemberId(Long id);
 }
