@@ -1,19 +1,16 @@
 package com.app.restful.service;
 
-
 import com.app.restful.domain.dto.PostCreateRequestDTO;
 import com.app.restful.domain.dto.PostDTO;
-import com.app.restful.domain.dto.PostListRequestDTO;
 import com.app.restful.domain.dto.PostUpdateRequestDTO;
 import com.app.restful.domain.vo.PostVO;
-
 import java.util.List;
 
 public interface PostService {
-    public List<PostListRequestDTO> getPostList();
-    public PostListRequestDTO getPost(Long id);
-    public void createPost(PostCreateRequestDTO postCreateRequestDTO);
-    public void updatePost(PostUpdateRequestDTO postUpdateRequestDTO);
-    public void withdrawPost(Long id);
-
+    public void createPost(PostCreateRequestDTO postCreateRequestDTO, Long memberId);
+    public List<PostDTO> getPostList(String order);
+    public PostDTO getPostDetail(Long id);
+    public void modifyPost(PostUpdateRequestDTO postUpdateRequestDTO, Long id);
+    public void remove(Long id);
+    public void removeByMemberId(Long memberId);
 }

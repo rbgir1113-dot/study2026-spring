@@ -1,15 +1,18 @@
 package com.app.restful.api;
 
+import com.app.restful.domain.dto.ApiResponseDTO;
 import com.app.restful.domain.dto.PostCreateRequestDTO;
 import com.app.restful.domain.dto.PostDTO;
-import com.app.restful.domain.dto.PostListRequestDTO;
 import com.app.restful.domain.dto.PostUpdateRequestDTO;
-import com.app.restful.domain.vo.PostVO;
 import com.app.restful.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,46 +21,98 @@ import java.util.List;
 @RequestMapping("/api/posts")
 @RequiredArgsConstructor
 public class PostAPI {
-
     private final PostService postService;
-    private final PostVO postVO;
-    private final PostUpdateRequestDTO postUpdateRequestDTO;
 
-    @Operation(summary = "게시글 리스트 조회 서비스", description = "게시글 작성한 회원과 내용 제목 리스트로 전부 출력")
-    @ApiResponse(responseCode = "201", description = "게시글 목록 조회 성공")
+    // 게시판 전체 조회
+    @Operation(summary = "게시판 목록", description = "게시판 목록을 조회하는 서비스")
+    @ApiResponse(responseCode = "200", description = "게시글 목록 조회 성공")
+    @ApiResponse(responseCode = "404", description = "게시글 조회 실패")
+    @Parameter(
+            name = "order",
+            description = "게시글의 정렬을 처리하는 파라미터",
+            schema = @Schema(type = "string"),
+            required = true,
+            in = ParameterIn.QUERY
+    )
     @GetMapping("")
-    public List<PostListRequestDTO> postList() {
-        return postService.getPostList();
+    public ResponseEntity<ApiResponseDTO> getPostList(
+            @RequestParam(value = "order", defaultValue = "desc") String order
+    ){
+//        return postService.getPostList(order);
+            List<PostDTO> postList = postService.getPostList(order);
+
+//            .status : 상태코드 -> mdn 상태코드
+//            .body : 응답 데이터 -> ApiResponseDTO
+            return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("게시글 목록 조회 성공" , postList));
     }
 
-    @Operation(summary = "게시글 단일 출력", description = "게시글 단일로 회원들에게 보여줌")
-    @ApiResponse(responseCode = "201" , description = "게시글 단일 조회 성공")
+    // 게시글 단일 조회
+
+    @Operation(summary = "게시판 상세 보기", description = "해당 번호의 게시글 내용을 상세하게 보여주는 서비스")
+    @ApiResponse(responseCode = "200", description = "게시글 단일 조회 성공")
+    @ApiResponse(responseCode = "404", description = "게시글 조회 실패")
+    @Parameter(
+            name = "id",
+            description = "게시글의 번호",
+            schema = @Schema(type = "number"),
+            required = true,
+            in = ParameterIn.PATH
+    )
     @GetMapping("/{id}")
-    public PostListRequestDTO post(@PathVariable Long id) {
-        return postService.getPost(id);
+    public ResponseEntity<ApiResponseDTO> getPostDetail(@PathVariable Long id){
+//        return postService.getPostDetail(id);
+        PostDTO post = postService.getPostDetail(id);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("게시글 상세 조회 성공" , post));
     }
 
-    @Operation(description = "게시글 작성 해주는 서비스", summary = "게시글 작성")
-    @ApiResponse(responseCode = "201", description = "게시글 추가 완료")
-    @PostMapping("/create")
-    public void createPost(@RequestBody PostCreateRequestDTO postCreateRequestDTO) {
-        postService.createPost(postCreateRequestDTO);
+    // 게시글 작성
+    @ApiResponse(responseCode = "201", description = "게시글 작성 성공")
+    @ApiResponse(responseCode = "400", description = "게시글 작성 실패")
+    @PostMapping("")
+    @Operation(summary = "게시글 추가", description = "게시글 내용을 받으면 추가해주는 서비스")
+    public ResponseEntity<ApiResponseDTO> createPost(@RequestBody PostCreateRequestDTO postCreateRequestDTO) {
+        postService.createPost(postCreateRequestDTO, 1L);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponseDTO.of("게시글 생성 성공", postCreateRequestDTO));
     }
 
-    @Operation(summary = "게시글 수정" , description = "게시글을 수정해주는 서비스")
-    @ApiResponse(responseCode = "207", description = "게시글 수정 완료")
+    // 게시글 수정
+    @Operation(summary = "게시판 수정", description = "해당 번호의 게시글 내용을 변경해주는 서비스")
+    @ApiResponse(responseCode = "204", description = "게시글 수정 성공")
+    @ApiResponse(responseCode = "404", description = "게시글 수정 실패")
+    @Parameter(
+            name = "id",
+            description = "게시글의 번호",
+            schema = @Schema(type = "number"),
+            required = true,
+            in = ParameterIn.PATH
+    )
     @PutMapping("/{id}")
-    public void updatePost(@PathVariable Long id, @RequestBody PostUpdateRequestDTO postUpdateRequestDTO) {
-        postUpdateRequestDTO.setId(id);
-        postService.updatePost(postUpdateRequestDTO);
+    public ResponseEntity<ApiResponseDTO> modifyPost(
+            @PathVariable Long id,
+            @RequestBody PostUpdateRequestDTO postUpdateRequestDTO
+    ){
+        postService.modifyPost(postUpdateRequestDTO, id);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponseDTO.of("게시글 수정 성공", postUpdateRequestDTO));
     }
 
-    @Operation(summary = "게시글 삭제", description = "게시글을 삭제해주는 서비스")
-    @ApiResponse(responseCode = "207", description = "게시글 삭제 완료")
+    // 게시글 삭제
+    @Operation(summary = "게시판 삭제", description = "해당 번호의 게시글 삭제해 주는 서비스")
+    @ApiResponse(responseCode = "204", description = "게시글 삭제 성공")
+    @ApiResponse(responseCode = "404", description = "게시글 삭제 실패")
+    @Parameter(
+            name = "id",
+            description = "게시글의 번호",
+            schema = @Schema(type = "number"),
+            required = true,
+            in = ParameterIn.PATH
+    )
     @DeleteMapping("/{id}")
-    public void withdrawPost(@PathVariable Long id) {
-        postService.withdrawPost(id);
+    public ResponseEntity<ApiResponseDTO> removePost(@PathVariable Long id){
+        postService.remove(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body(ApiResponseDTO.of("게시글 삭제 성공"));
     }
-
 
 }

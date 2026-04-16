@@ -5,30 +5,26 @@ import com.app.restful.domain.dto.PostUpdateRequestDTO;
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
-@Data
 @Component
+@Data
 public class PostVO {
     private Long id;
     private String postTitle;
     private String postContent;
     private Long memberId;
-    private Long postReadCount;
 
+    // 정적 팩토리 메서드
+    public static PostVO from(PostUpdateRequestDTO postUpdateRequestDTO) {
+        PostVO postVO = new PostVO();
+        postVO.setPostTitle(postUpdateRequestDTO.getPostTitle());
+        postVO.setPostContent(postUpdateRequestDTO.getPostContent());
+        return postVO;
+    }
 
     public static PostVO from(PostCreateRequestDTO postCreateRequestDTO) {
         PostVO postVO = new PostVO();
         postVO.setPostTitle(postCreateRequestDTO.getPostTitle());
         postVO.setPostContent(postCreateRequestDTO.getPostContent());
-        postVO.setMemberId(postCreateRequestDTO.getMemberId());
-        return postVO;
-    }
-
-//    오버로딩
-    public static PostVO from(PostUpdateRequestDTO postUpdateRequestDTO) {
-        PostVO postVO = new PostVO();
-        postVO.setId(postUpdateRequestDTO.getId());
-        postVO.setPostTitle(postUpdateRequestDTO.getPostTitle());
-        postVO.setPostContent(postUpdateRequestDTO.getPostContent());
         return postVO;
     }
 }
