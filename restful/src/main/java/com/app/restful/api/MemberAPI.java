@@ -58,13 +58,13 @@ public class MemberAPI {
 
     // 회원 추가 서비스
     @Operation(summary = "회원가입 서비스", description = "회원 정보를 받아서 회원가입을 시켜주는 서비스")
-    @ApiResponse(responseCode = "201", description = "회원가입 성공")
+    @ApiResponse(responseCode = "200", description = "회원가입 성공")
     @ApiResponse(responseCode = "409", description = "이메일 중복")
     @PostMapping("/join")
     public ResponseEntity<ApiResponseDTO> join(@RequestBody MemberJoinRequestDTO memberRequestDTO){
 
         memberService.join(memberRequestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseDTO.of("회원가입 성공"));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("회원가입 성공"));
     }
 
     // 로그인 서비스
@@ -107,7 +107,7 @@ public class MemberAPI {
 
     // 삭제 컨트롤러
     @Operation(summary = "회원 탈퇴 서비스", description = "회원 아이디로 회원 탈퇴해주는 서비스")
-    @ApiResponse(responseCode = "204", description = "회원 탈퇴 완료")
+    @ApiResponse(responseCode = "200", description = "회원 탈퇴 완료")
     @ApiResponse(responseCode = "401", description = "토큰 없음")
     @ApiResponse(responseCode = "403", description = "권한 없음")
     @Parameter(
@@ -121,7 +121,7 @@ public class MemberAPI {
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponseDTO> withdraw(@PathVariable Long id){
         memberService.withdraw(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponseDTO.of("회원 탈퇴 완료"));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponseDTO.of("회원 탈퇴 완료"));
     }
 
 }
