@@ -14,7 +14,7 @@
 
         <!-- DTO alias -->
 <!--        <typeAlias type="com.app.restful.domain.dto.MemberJoinRequestDTO" alias="MemberJoinRequestDTO"></typeAlias>-->
-        <typeAlias type="com.app.oauth.domain.dto.MemberJoinDTO" alias="MemberJoinDTO"></typeAlias>
+        <typeAlias type="com.app.oauth.domain.dto.MemberDTO" alias="MemberDTO"></typeAlias>
 
     </typeAliases>
 </configuration>
