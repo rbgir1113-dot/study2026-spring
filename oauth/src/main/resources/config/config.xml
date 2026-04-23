@@ -9,10 +9,12 @@
     <typeAliases>
 
         <!-- VO alias -->
-        <typeAlias type="com.app.oauth.domain.vo.OauthMemberVO" alias="OauthMemberVO"></typeAlias>
+        <typeAlias type="com.app.oauth.domain.vo.MemberVO" alias="MemberVO"></typeAlias>
+        <typeAlias type="com.app.oauth.domain.vo.SocialMemberVO" alias="SocialMemberVO"></typeAlias>
 
         <!-- DTO alias -->
 <!--        <typeAlias type="com.app.restful.domain.dto.MemberJoinRequestDTO" alias="MemberJoinRequestDTO"></typeAlias>-->
+        <typeAlias type="com.app.oauth.domain.dto.MemberJoinDTO" alias="MemberJoinDTO"></typeAlias>
 
     </typeAliases>
 </configuration>
