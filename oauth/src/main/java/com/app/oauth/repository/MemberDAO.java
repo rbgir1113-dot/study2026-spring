@@ -1,6 +1,6 @@
 package com.app.oauth.repository;
 
-import com.app.oauth.domain.dto.MemberDTO;
+import com.app.oauth.domain.dto.member.dto.MemberDTO;
 import com.app.oauth.domain.vo.MemberVO;
 import com.app.oauth.mapper.MemberMapper;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class MemberDAO {
 
 
 //    회원 조회(id)
-    public Optional<MemberVO> findById(Long id) {
+    public Optional<MemberDTO> findById(Long id) {
         return Optional.ofNullable(memberMapper.select(id));
     }
 

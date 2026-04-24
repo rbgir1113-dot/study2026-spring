@@ -1,6 +1,6 @@
 package com.app.oauth.mapper;
 
-import com.app.oauth.domain.dto.MemberDTO;
+import com.app.oauth.domain.dto.member.dto.MemberDTO;
 import com.app.oauth.domain.vo.MemberVO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -11,7 +11,7 @@ public interface MemberMapper {
     public void insert(MemberVO memberVO);
 
 //    회원 조회(ID)
-    public MemberVO select(Long id);
+    public MemberDTO select(Long id);
 
 //    회원 조회(memberEmail, memberPassword)
     public MemberDTO selectByMemberEmailAndMemberPassword(String memberEmail);
