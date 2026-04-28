@@ -36,7 +36,7 @@ public class MemberServiceImpl implements MemberService {
         ApiResponseDTO apiResponseDTO = new ApiResponseDTO();
         Map<String, Object> claims = new HashMap<>();
 
-        if(memberDAO.existsByMemberEmail(memberDTO.getMemberEmail())){
+        if(memberDAO.existsMemberByMemberEmailAndSocialMemberProvider(memberDTO)){
             throw new MemberException("중복된 이메일 입니다.", HttpStatus.BAD_REQUEST);
         }
 
@@ -71,7 +71,7 @@ public class MemberServiceImpl implements MemberService {
     public ApiResponseDTO me(String token) {
         Claims claims = jwtTokenUtil.parseToken(token);
         Long id = Long.parseLong((String)claims.get("id"));
-        MemberDTO foundMember = memberDAO.findById(id).orElseThrow(() -> {
+        MemberDTO foundMember = memberDAO.findMemberById(id).orElseThrow(() -> {
             throw new MemberException("me 회원 조회 실패", HttpStatus.BAD_REQUEST);
         });
 

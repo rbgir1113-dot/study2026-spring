@@ -6,25 +6,21 @@ import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface MemberMapper {
-
-//    회원추가
+    //    회원추가
     public void insert(MemberVO memberVO);
 
-//    회원 조회(ID)
+    //    회원 조회(ID)
     public MemberDTO select(Long id);
 
-//    회원 조회(memberEmail, memberPassword)
-    public MemberDTO selectByMemberEmailAndMemberPassword(String memberEmail);
+    //    회원 조회(memberEmail)
+    public MemberDTO selectByMemberEmailAndSocialMemberProvider(MemberDTO memberDTO);
 
-//    회원 조회(memberEmail)
-    public MemberVO selectByEmail(String memberEmail);
+    //    회원 가입 여부 조회(memberEmail)
+    public boolean existsMemberByMemberEmailAndSocialMemberProvider(MemberDTO memberDTO);
 
-//    회원 가입 여부 조회(memerEmail)
-    public boolean existsByMemberEmail(String memberEmail);
-
-//    회원 수정
+    //    회원 정보 수정
     public void update(MemberVO memberVO);
 
-//    회원 삭제
+    //    회원 삭제
     public void delete(Long id);
 }

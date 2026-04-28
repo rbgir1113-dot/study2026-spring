@@ -30,20 +30,39 @@ function App() {
             } catch (err) {
                 // accessToken이 만료
                 try {
-                  console.log(err)
-                  // 한번더 refresh 토큰과 accessToken을 백엔드로 보내서 accessToken 재발급
-                  
+                    // 한번더 refresh 토큰과 accessToken을 백엔드로 보내서 accessToken 재발급
+                    console.log("AccessToken이 만료됨!")
+                    
+                    const response = await fetch("http://localhost:10000/api/auth/refresh", {
+                        method: "POST",
+                        credentials: "include"
+                    })
 
+                    if(!response.ok) throw new Error("refresh Token Expired")
+                    
+                    // 새로운 accessToken으로 재요청
+                    const meReponse = await fetch("http://localhost:10000/api/members/me", {
+                        credentials: "include"
+                    })
+                    
+                    if(!meReponse.ok) throw new Error("Access Token Expired")
+                    const datas = await meReponse.json()
+                    const {success, message, data} = datas
+                    if(success){
+                        setMember(data)
+                        setIsAuthenticated(true)
+                    }
 
-                }catch(err) {
-                  // refresh 토큰 만료 -> 재로그인
-
+                } catch (err) {
+                    // refresh 토큰 만료 -> 재로그인
+                    setMember(null)
+                    setIsAuthenticated(false)
                 }
             }
         }
 
         intializeAuth()
-    } , [isAuthenticated])
+    } , [])
 
     console.log(member)
 
