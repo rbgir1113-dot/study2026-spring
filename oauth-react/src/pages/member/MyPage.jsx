@@ -11,6 +11,8 @@ const MyPage = () => {
             })
 
             console.log("testFetch 실행")
+            const datas = await response.json()
+            console.log(datas)
         }
         testFetch()
     }, [])

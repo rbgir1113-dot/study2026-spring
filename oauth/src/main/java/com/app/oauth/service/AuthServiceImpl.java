@@ -1,15 +1,16 @@
 package com.app.oauth.service;
 
-import com.app.oauth.domain.dto.member.dto.JwtTokenDTO;
-import com.app.oauth.domain.dto.member.dto.MemberDTO;
+import com.app.oauth.domain.dto.JwtTokenDTO;
+import com.app.oauth.domain.dto.MemberDTO;
 import com.app.oauth.domain.vo.MemberVO;
 import com.app.oauth.domain.vo.SocialMemberVO;
 import com.app.oauth.exception.JwtTokenException;
 import com.app.oauth.exception.MemberException;
 import com.app.oauth.repository.MemberDAO;
 import com.app.oauth.repository.SocialMemberDAO;
+import com.app.oauth.util.AuthCodeGenerator;
 import com.app.oauth.util.JwtTokenUtil;
-import io.jsonwebtoken.Claims;
+import com.app.oauth.util.SmsUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class AuthServiceImpl implements AuthService {
 
+    private final SocialMemberDAO socialMemberDAO;
     @Value("${jwt.token-blacklist-prefix}")
     private String BLACKLIST_TOKEN_PREFIX;
 
@@ -37,10 +38,10 @@ public class AuthServiceImpl implements AuthService {
     private String REFRESH_TOKEN_PREFIX;
 
     private final MemberDAO memberDAO;
-    private final SocialMemberDAO socialMemberDAO;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtil jwtTokenUtil;
     private final RedisTemplate redisTemplate;
+    private final SmsUtil smsUtil;
 
     //    일반 로그인
 //    순수데이터(JwtTokenDTO) 반환
@@ -90,27 +91,22 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public JwtTokenDTO socialLogin(MemberDTO memberDTO) {
 
-//            ----------- 서비스 --------------
-        // 유저를 찾는다
-        // 만약 유저가 있다면 로그인
-        // 만약 유저가 없다면 회원가입 후 로그인
-
-//            --------------------------------
         JwtTokenDTO jwtTokenDTO = new JwtTokenDTO();
         Map<String, String> claims = new HashMap<String, String>();
 
 
         if(memberDAO.existsMemberByMemberEmailAndSocialMemberProvider(memberDTO)){
-            // 만약 회원이 있으면 -> 토큰 발급
-            // 조회
-            MemberDTO foundMember = memberDAO
+//            만약 유저가 있다면 -> 토큰 발급
+//            조회
+            MemberDTO foundMember =memberDAO
                     .selectByMemberEmailAndSocialMemberProvider(memberDTO)
-                    .orElseThrow(() -> { throw new MemberException("socialLogin 회원 조회 실패",HttpStatus.BAD_REQUEST);});
+                    .orElseThrow(() -> {throw new MemberException("socialLogin 회원 조회 실패", HttpStatus.BAD_REQUEST);});
 
             claims.put("id", foundMember.getId().toString());
 
-        } else {
-            // 만약 유저가 없다면 회원 가입 후 -> 토큰 발급
+        }else{
+//            만약 유저가 없다면 회원가입 후 -> 토큰 발급
+
             MemberVO memberVO = MemberVO.from(memberDTO);
             SocialMemberVO socialMemberVO = SocialMemberVO.from(memberDTO);
 
@@ -119,7 +115,6 @@ public class AuthServiceImpl implements AuthService {
 
             socialMemberDAO.save(socialMemberVO);
             claims.put("id", memberVO.getId().toString());
-
         }
 
         claims.put("memberEmail", memberDTO.getMemberEmail());
@@ -131,7 +126,20 @@ public class AuthServiceImpl implements AuthService {
         jwtTokenDTO.setAccessToken(accessToken);
         jwtTokenDTO.setRefreshToken(refreshToken);
 
+        // redis에 토큰 저장
+        saveRefreshToken(jwtTokenDTO);
+
         return jwtTokenDTO;
+    }
+
+    // Access Token
+    @Override
+    public void logout(JwtTokenDTO jwtTokenDTO) {
+        if(validateRefreshToken(jwtTokenDTO)){
+            saveBlackListedToken(jwtTokenDTO);
+        }else{
+            throw new JwtTokenException("권한 없음", HttpStatus.UNAUTHORIZED);
+        }
     }
 
     // Redis에 refresh Token 저장
@@ -162,7 +170,6 @@ public class AuthServiceImpl implements AuthService {
             if(!refreshToken.equals(storedToken)){
                 return false;
             }
-
             return true;
         } catch (Exception e) {
             return false;
@@ -172,14 +179,23 @@ public class AuthServiceImpl implements AuthService {
     // Redis에 블랙리스트를 등록 (로그아웃 시 토큰 무효화)
     @Override
     public boolean saveBlackListedToken(JwtTokenDTO jwtTokenDTO) {
-        String refreshToken = jwtTokenDTO.getRefreshToken();
-        Long id = Long.parseLong((String)jwtTokenUtil.parseToken(refreshToken).get("id"));
-        String key = BLACKLIST_TOKEN_PREFIX + id;
+        String refreshToken = null, accessToken = null, refreshKey = null, accessKey = null;
+        Long refreshId = null, accessId = null;
+
+        refreshToken = jwtTokenDTO.getRefreshToken();
+        refreshId = Long.parseLong((String)jwtTokenUtil.parseToken(refreshToken).get("id"));
+        refreshKey = BLACKLIST_TOKEN_PREFIX + refreshId;
+
+        accessToken = jwtTokenDTO.getAccessToken();
+        accessId = Long.parseLong((String)jwtTokenUtil.parseToken(refreshToken).get("id"));
+        accessKey = BLACKLIST_TOKEN_PREFIX + accessId;
 
         try {
-            redisTemplate.opsForSet().add(key, refreshToken);
+            redisTemplate.opsForSet().add(refreshKey, refreshToken);
+            redisTemplate.opsForSet().add(accessKey, accessToken);
             // TTL
-            redisTemplate.expire(key, 30, TimeUnit.DAYS);
+            redisTemplate.expire(refreshKey, 30, TimeUnit.DAYS);
+            redisTemplate.expire(accessKey, 1, TimeUnit.DAYS);
             return true;
         } catch (Exception e) {
             return false;
@@ -230,17 +246,80 @@ public class AuthServiceImpl implements AuthService {
 
         return jwtTokenDTO;
     }
+
+    // 핸드폰 인증 코드 발송
+    @Override
+    public boolean sendMemberPhoneVerificationCode(String memberPhone) {
+        memberPhone.replace("-", "");
+        String message = null;
+        String code = AuthCodeGenerator.generateAuthCode();
+        message = "[이음]\n인증코드를 입력해주세요.\n["+ code + "]";
+        smsUtil.sendOneMemberPhone(memberPhone, message);
+
+        // redis 저장
+        // phone:code 콜론체이닝
+        // ex) phone:01012341234:987654
+        String key = "phone:" + memberPhone + ":" + code;
+        try {
+            redisTemplate.opsForValue().set(key, code, 3, TimeUnit.MINUTES);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    // 핸드폰 인증 코드 검증
+    @Override
+    public boolean verifyMemberPhoneVerificationCode(String memberPhone, String code) {
+        String key = "phone:" + memberPhone + ":" + code;
+
+        try {
+            String storedCode = String.valueOf(redisTemplate.opsForValue().get(key));
+            redisTemplate.delete(key);
+            return code.equals(storedCode);
+
+        } catch (Exception e) {
+            // 조회 오류
+            return false;
+        }
+    }
+
+
+    // 이메일 인증 코드 발송
+    @Override
+    public boolean sendMemberEmailVerificationCode(String memberEmail) {
+        String message = null;
+        String code = AuthCodeGenerator.generateAuthCode();
+        message = "[이음]\n인증코드를 입력해주세요.\n["+ code + "]\n 조용조용조용필";
+        smsUtil.sendOneMemberEmail(memberEmail ,"[뀨잉]",message);
+
+        // redis 저장
+        // phone:code 콜론체이닝
+        // ex) phone:01012341234:987654
+        try {
+            String key = "email:" + memberEmail + ":" + code;
+            redisTemplate.opsForValue().set(key, code, 3, TimeUnit.MINUTES);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+
+    // 이메일 인증 코드 검증
+    @Override
+    public boolean verifyMemberEmailVerificationCode(String memberEmail, String code) {
+        String key = "email:" + memberEmail + ":" + code;
+
+        try {
+            String storedCode = String.valueOf(redisTemplate.opsForValue().get(key));
+            redisTemplate.delete(key);
+            return code.equals(storedCode);
+
+        } catch (Exception e) {
+            // 조회 오류
+            return false;
+        }
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
 

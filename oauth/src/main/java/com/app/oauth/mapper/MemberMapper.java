@@ -1,6 +1,6 @@
 package com.app.oauth.mapper;
 
-import com.app.oauth.domain.dto.member.dto.MemberDTO;
+import com.app.oauth.domain.dto.MemberDTO;
 import com.app.oauth.domain.vo.MemberVO;
 import org.apache.ibatis.annotations.Mapper;
 

@@ -1,9 +1,8 @@
 package com.app.oauth.service;
 
-import com.app.oauth.domain.dto.member.dto.response.ApiResponseDTO;
-import com.app.oauth.domain.dto.member.dto.JwtTokenDTO;
-import com.app.oauth.domain.dto.member.dto.MemberDTO;
-import com.app.oauth.domain.dto.member.dto.response.MemberResponseDTO;
+import com.app.oauth.domain.dto.response.ApiResponseDTO;
+import com.app.oauth.domain.dto.MemberDTO;
+import com.app.oauth.domain.dto.response.MemberResponseDTO;
 import com.app.oauth.domain.vo.MemberVO;
 import com.app.oauth.domain.vo.SocialMemberVO;
 import com.app.oauth.exception.MemberException;

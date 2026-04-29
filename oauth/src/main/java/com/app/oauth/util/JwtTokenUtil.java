@@ -22,8 +22,8 @@ public class JwtTokenUtil {
         String memeberEmail = claims.get("memberEmail");
 
 //        평균 1분 ~ 5분(테스트용으로 24시간)
-//        Long expirationTimeInMillis = 1000L * 60 * 60 * 24;
-        Long expirationTimeInMillis = 1000L * 10;
+        Long expirationTimeInMillis = 1000L * 60 * 60 * 24;
+//        Long expirationTimeInMillis = 1000L * 10;
         Date expirationDate = new Date(System.currentTimeMillis() + expirationTimeInMillis);
 
         // JWT를 발급한 곳

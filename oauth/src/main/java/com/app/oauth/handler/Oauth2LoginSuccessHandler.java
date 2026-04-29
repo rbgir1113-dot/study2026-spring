@@ -1,7 +1,7 @@
 package com.app.oauth.handler;
 
-import com.app.oauth.domain.dto.member.dto.JwtTokenDTO;
-import com.app.oauth.domain.dto.member.dto.MemberDTO;
+import com.app.oauth.domain.dto.JwtTokenDTO;
+import com.app.oauth.domain.dto.MemberDTO;
 import com.app.oauth.service.AuthService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,12 +9,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.client.authentication.OAuth2LoginAuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -38,8 +35,8 @@ public class Oauth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
             OAuth2User oauth2User = authToken.getPrincipal();
             Map<String, Object> attributes = oauth2User.getAttributes();
             String socialMemberProvider = authToken.getAuthorizedClientRegistrationId();
-            log.info("socialMemberProvider : {}", socialMemberProvider);
-            log.info("attributes : {}", attributes);
+//            log.info("socialMemberProvider : {}", socialMemberProvider);
+//            log.info("attributes : {}", attributes);
 
             String memberEmail = null;
             String socialMemberProviderId = null;
@@ -71,7 +68,7 @@ public class Oauth2LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
             memberDTO.setSocialMemberProvider(socialMemberProvider);
 
             JwtTokenDTO jwtTokenDTO = authService.socialLogin(memberDTO);
-            log.info("jwtTokenDTO : {}", jwtTokenDTO);
+//            log.info("jwtTokenDTO : {}", jwtTokenDTO);
 
             ResponseCookie accessTokenCookie = ResponseCookie
                     .from("accessToken", jwtTokenDTO.getAccessToken())

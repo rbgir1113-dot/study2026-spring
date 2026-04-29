@@ -1,11 +1,9 @@
 package com.app.oauth.api;
 
-import com.app.oauth.domain.dto.member.dto.JwtTokenDTO;
-import com.app.oauth.domain.dto.member.dto.MemberDTO;
-import com.app.oauth.domain.dto.member.dto.response.ApiResponseDTO;
+import com.app.oauth.domain.dto.JwtTokenDTO;
+import com.app.oauth.domain.dto.MemberDTO;
+import com.app.oauth.domain.dto.response.ApiResponseDTO;
 import com.app.oauth.service.AuthService;
-import com.app.oauth.service.MemberService;
-import com.app.oauth.util.JwtTokenUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -84,6 +82,8 @@ public class AuthApi {
                 .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
                 .body(ApiResponseDTO.of("토큰 재발급 완료", jwtTokenDTO));
     }
+
+
 
 
 }

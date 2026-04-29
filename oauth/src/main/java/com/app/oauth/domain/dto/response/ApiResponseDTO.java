@@ -1,4 +1,4 @@
-package com.app.oauth.domain.dto.member.dto.response;
+package com.app.oauth.domain.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,12 +17,13 @@ public class ApiResponseDTO<T> {
     public ApiResponseDTO(String message) {
         this.message = message;
     }
+
     public ApiResponseDTO(String message, T data) {
         this.message = message;
         this.data = data;
     }
-    public ApiResponseDTO(boolean suceess, String message) {
-        this.success = suceess;
+    public ApiResponseDTO(boolean success, String message) {
+        this.success = success;
         this.message = message;
     }
 
@@ -32,6 +33,10 @@ public class ApiResponseDTO<T> {
 
     public static <T> ApiResponseDTO<T> of(String message, T data) {
         return new ApiResponseDTO<>(message, data);
+    }
+
+    public static <T> ApiResponseDTO<T> of(boolean success ,String message) {
+        return new ApiResponseDTO<>(success ,message);
     }
 
 }

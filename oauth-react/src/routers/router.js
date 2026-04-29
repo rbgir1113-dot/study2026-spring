@@ -6,6 +6,7 @@ import Join from '../pages/member/Join';
 import Login from '../pages/member/Login';
 import AuthLayout from '../pages/layout/AuthLayout';
 import MyPage from '../pages/member/MyPage';
+import Verify from '../pages/member/Verify';
 
 const router = createBrowserRouter([
     {
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
             {
                 path: "member/login",
                 element: <Login />
+            },
+            {
+                path: "member/verify",
+                element: <Verify />
             },
             {
               // 보호된 라우트

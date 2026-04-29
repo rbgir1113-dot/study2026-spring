@@ -1,6 +1,6 @@
 package com.app.oauth.repository;
 
-import com.app.oauth.domain.dto.member.dto.MemberDTO;
+import com.app.oauth.domain.dto.MemberDTO;
 import com.app.oauth.domain.vo.MemberVO;
 import com.app.oauth.mapper.MemberMapper;
 import lombok.RequiredArgsConstructor;
