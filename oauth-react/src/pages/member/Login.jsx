@@ -50,7 +50,7 @@ const Login = () => {
             })
             .then(async (res) => {
                 // 정상 응답일 때
-                const response = await fetch("http://localhost:10000/api/members/me", {
+                const response = await fetch("http://localhost:10000/private/api/members/me", {
                     credentials: "include"
                 })
     
