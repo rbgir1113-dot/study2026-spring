@@ -77,7 +77,7 @@ const MyPage = () => {
     return (
         <div>
             <h2>프로필 수정</h2>
-            <S.Thumbnail src={member?.memberPicture} />
+            <S.Thumbnail src={`http://localhost:10000/file/display?fileName=${member?.memberPicture}`} />
             <form onSubmit={handleSubmit(updateFile)}>
                 <input 
                     type="file"
